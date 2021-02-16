@@ -33,8 +33,8 @@ router.post("/addKey", function(req, res, next) {
   const toAdd = JSON.parse(req.body.toAdd)
   console.log(toAdd)
   const tempKey = {
-    number:toAdd.number,
     type:toAdd.type,
+    number:toAdd.number,
     owner:toAdd.owner,
     issueDate:toAdd.issueDate,
     returnDate:toAdd.returnDate,
@@ -62,13 +62,12 @@ router.post('/issueKey', function(req, res, next) {
 router.post('/returnKey', function(req, res, next) {
   const toUpdate= JSON.parse(req.body.toUpdate);
   const query = {_id: ObjectID(toUpdate._id)}
-  const newValues = {$set : {owner : null, returnDate: new Date().toDateString()}}
+  const newValues = {$set : {owner : "", returnDate: new Date().toDateString()}}
   db.collection("keys").updateOne(query, newValues, function(err, res) {
     if (err) throw err;
     console.log(toUpdate._id + ": Returned")
   })
 })
 
-// router.post()
 
 module.exports = router;

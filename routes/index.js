@@ -61,7 +61,6 @@ router.post("/keyHistory", function(req, res, next) {
 
 router.post("/addKey", function(req, res, next) {
   const toAdd = JSON.parse(req.body.toAdd)
-  console.log(toAdd)
   const tempKey = {
     type:toAdd.type,
     number:toAdd.number,
@@ -69,8 +68,12 @@ router.post("/addKey", function(req, res, next) {
     issueDate:toAdd.issueDate,
     returnDate:toAdd.returnDate,
   }
-  const result = db.collection("keys").insertOne(tempKey);
-  res.status(201)
+  db.collection("keys").insertOne(tempKey, (err, response) => {
+    if (err) throw err;
+    res.status(201).json({"key_id":response.insertedId})
+  })
+  
+  
 })
 
 router.post('/issueKey', function(req, res, next) {

@@ -27,7 +27,25 @@ router.get("/keys", function(req, res, next) {
     res.status(200).json(result)
   })
 })
-  
+router.get("/keyTypes", function(req, res, next) {
+  db.collection("admin").find().toArray((err, result) => {
+    if (err) throw err;
+    db.close;
+    res.status(200).json(result[0].keyTypes)
+  })
+})
+router.post("/updateKeyTypes", (req, res, next) => {
+  const newValues = {
+    $set : {
+      keyTypes: JSON.parse(req.body.newKeyTypes)
+    }
+  }
+  db.collection("admin").updateOne({}, newValues, err => {
+    if (err) throw err
+    else res.status(200).json({"response":"Key Types Updated"})
+  })
+  console.log(req.body.newKeyTypes)
+})
 router.post("/login", function( req, res, next) {
   const query = {password: req.body.passphrase};
   db.collection("users").find(query).toArray(function(err, result) {
@@ -75,6 +93,24 @@ router.post("/addKey", function(req, res, next) {
   
   
 })
+router.post("/updateKey", (req, res, next) => {
+  const toUpdate = JSON.parse(req.body.toUpdate)
+  const updatedKey = toUpdate.updatedKey
+  const query = {_id: ObjectID(updatedKey._id)}
+  const newValues = {
+    $set : {
+      owner: updatedKey.owner,
+      type: updatedKey.type,
+      issueDate: updatedKey.issueDate,
+      number: updatedKey.number
+    }
+  }
+  db.collection("keys").updateOne(query, newValues, (err) => {
+    if (err) throw err;
+  })
+})
+
+
 
 router.post('/issueKey', function(req, res, next) {
   const toUpdate = JSON.parse(req.body.toUpdate);
@@ -82,7 +118,13 @@ router.post('/issueKey', function(req, res, next) {
   
   const query = {_id: ObjectID(_id)};
   console.log(query)
-  const newValues = {$set : {owner: toUpdate.newOwner, issueDate: new Date().toDateString()}}
+  const newValues = {
+    $set : {
+      owner: toUpdate.newOwner, 
+      issueDate: new Date().toDateString(),
+      returnDate: ""
+    }
+  }
   db.collection("keys").updateOne(query, newValues, function(err) {
     if (err) throw err;
     console.log(toUpdate._id + ": Issued")

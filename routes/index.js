@@ -4,7 +4,7 @@ var mongoClient = require('mongodb').MongoClient;
 var ObjectID = require('mongodb').ObjectID
 var db;
 const { CommandCursor } = require('mongodb');
-const school = "StThomasMoore"
+const school = "StWilliams"
 
 mongoClient.connect("mongodb://127.0.0.1:27017", { useUnifiedTopology: true }, function(err, client) {
   if (err) throw err;
@@ -35,11 +35,14 @@ router.get("/keyTypes", function(req, res, next) {
   })
 })
 router.post("/updateKeyTypes", (req, res, next) => {
+  console.log(req.body)
   const newValues = {
     $set : {
       keyTypes: JSON.parse(req.body.newKeyTypes)
     }
   }
+  console.log("anything")
+  console.log(newValues)
   db.collection("admin").updateOne({}, newValues, err => {
     if (err) throw err
     else res.status(200).json({"response":"Key Types Updated"})
@@ -78,6 +81,7 @@ router.post("/keyHistory", function(req, res, next) {
 }) //Implement the backend for the keyHistory code
 
 router.post("/addKey", function(req, res, next) {
+  console.log(req.body)
   const toAdd = JSON.parse(req.body.toAdd)
   const tempKey = {
     type:toAdd.type,
